@@ -1,5 +1,5 @@
 import React from 'react'
-import { StyleSheet, TextInput, Text, View, TouchableOpacity } from 'react-native'
+import { StyleSheet, TextInput, Button, Text, View, TouchableOpacity } from 'react-native'
 import {connect} from 'react-redux'
 
 import {updateCode} from '../redux/actions'
@@ -21,6 +21,7 @@ class DetailsScreen extends React.Component {
             code: '',
             description: '',
             debugEnabled: true,
+            queryResult: {},
 
         }
     }
@@ -35,24 +36,28 @@ class DetailsScreen extends React.Component {
             `${FileSystem.documentDirectory}SQLite/rvudb.db`
         )
         .then(function({uri}){
-
             console.log("successfully downoaded db to ", uri)
+        })  
+    }
 
-            let db = SQLite.openDatabase('rvudb.db');
-       
-            // do whatever else you need here
+    //handledb query
+    handleDataQuery = () => {
+        const db = SQLite.openDatabase('rvudb.db')
+        try{
             db.transaction(tx => {
                 tx.executeSql(
-                    'SELECT * FROM RVU_APP_DATA WHERE hcpcs = 61680;',
-                    [],
-                    (_, { rows }) => console.log(JSON.stringify(rows)),
+                    "SELECT * FROM RVU_APP_DATA WHERE hcpcs = ?;",
+                    [this.state.code],
+                    ((_,  { rows } ) => this.setState({queryResult: rows._array[0]})),
+                    ((_, err) => {console.log('error in db select')})
                 )
-            },
-            console.log('error in db transaction'),//error message
-            )
+            })
+        } catch(err) {
+            if (this.state.debugEnabled) {
+                console.log('error in handleDataQuery')
+            }
+        }
         
-        
-        })
     }
 
     // hacky way of initializing a /sqlite directory on the device. This allows the loading of an already existing db to the same directory
@@ -105,6 +110,14 @@ class DetailsScreen extends React.Component {
             >
                 <Text style={{fontSize: 30}}>Submit Button</Text>
             </TouchableOpacity>
+            <Button
+                title='testing db'
+                onPress={() => this.handleDataQuery()}
+            />
+            <Button
+                title='test'
+                onPress={() => console.log('check freeze test')}
+            />
             <Text>
                 {this.props.everything.codes.allIds.toString()} {this.state.description}
             </Text>
@@ -112,7 +125,7 @@ class DetailsScreen extends React.Component {
                 Last code entered {this.props.everything.codes.allCodesArr[this.props.everything.codes.allCodesArr.length -1]}
             </Text>
             <Text>
-                Entire State {JSON.stringify(this.props.everything)}
+                Entire State {JSON.stringify(this.state.queryResult)}
             </Text>
           </View>
       )
