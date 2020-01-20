@@ -7,6 +7,7 @@ import {updateCode} from '../redux/actions'
 import * as SQLite from 'expo-sqlite'
 import * as FileSystem from 'expo-file-system'
 import { Asset } from 'expo-asset'
+import { ScrollView } from 'react-native-gesture-handler'
 //import {datapath} from '../assets/db/rvudb.db'
 
 
@@ -46,9 +47,9 @@ class DetailsScreen extends React.Component {
         try{
             db.transaction(tx => {
                 tx.executeSql(
-                    "SELECT * FROM RVU_APP_DATA WHERE hcpcs = ?;",
-                    [this.state.code],
-                    ((_,  { rows } ) => this.setState({queryResult: rows._array[0]})),
+                    "SELECT * FROM RVU_APP_DATA WHERE hcpcs = ? or description LIKE ?;",
+                    [this.state.code, `%${this.state.description}%`],
+                    ((_,  { rows } ) => this.setState({queryResult: rows._array})),
                     ((_, err) => {console.log('error in db select')})
                 )
             })
@@ -86,6 +87,12 @@ class DetailsScreen extends React.Component {
         console.log(`${Object.keys(this.props.everything.codes.byIds)}`)
         console.log(`${Object.values(this.props.everything.codes.byIds)}`)
     }
+
+    checkShowResults = () => {
+        if(this.state.queryResult[0] === undefined){
+            return false
+        } else {return true}
+    }
     
 
     render() {
@@ -114,10 +121,6 @@ class DetailsScreen extends React.Component {
                 title='testing db'
                 onPress={() => this.handleDataQuery()}
             />
-            <Button
-                title='test'
-                onPress={() => console.log('check freeze test')}
-            />
             <Text>
                 {this.props.everything.codes.allIds.toString()} {this.state.description}
             </Text>
@@ -125,8 +128,18 @@ class DetailsScreen extends React.Component {
                 Last code entered {this.props.everything.codes.allCodesArr[this.props.everything.codes.allCodesArr.length -1]}
             </Text>
             <Text>
-                Entire State {JSON.stringify(this.state.queryResult)}
+                {this.state.q}
             </Text>
+            <ScrollView>
+                {this.checkShowResults() && this.state.queryResult.map((value, index) => {
+                    return(
+                        <TouchableOpacity style={styles.item} key={index} onPress={console.log('pressed')}>
+                            <Text key={index}>{value.hcpcs} {value.description}</Text>
+                        </TouchableOpacity>
+                    )
+                })}
+
+            </ScrollView>
           </View>
       )
     }
@@ -138,6 +151,16 @@ class DetailsScreen extends React.Component {
       backgroundColor: '#fff',
       alignItems: 'center',
       justifyContent: 'flex-start',
+    },
+    item: {
+        borderWidth: 1,
+        borderColor: 'black',
+        minWidth: 100,
+        marginTop: 20,
+        marginHorizontal: 20,
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+        borderRadius: 3,
     },
     input: {
         fontSize: 40,
