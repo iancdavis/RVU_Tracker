@@ -1,14 +1,16 @@
 import React from 'react'
-import { StyleSheet, TextInput, Button, Text, View, TouchableOpacity } from 'react-native'
+import { StyleSheet, TextInput, Button, Text, View, TouchableOpacity, Keyboard, Alert } from 'react-native'
 import {connect} from 'react-redux'
 
-import {updateCode} from '../redux/actions'
+import {updateCode, addProcedure} from '../redux/actions'
 
 import * as SQLite from 'expo-sqlite'
 import * as FileSystem from 'expo-file-system'
 import { Asset } from 'expo-asset'
 import { ScrollView } from 'react-native-gesture-handler'
 //import {datapath} from '../assets/db/rvudb.db'
+
+const db = SQLite.openDatabase('rvudb.db')
 
 
 class DetailsScreen extends React.Component {
@@ -29,7 +31,7 @@ class DetailsScreen extends React.Component {
 
     componentDidMount() {
 
-        this.makeSQLiteDir()
+        //this.makeSQLiteDir()
         
         //load in db. Usin .mp4 file extension to bypass a known issue
         FileSystem.downloadAsync(
@@ -43,26 +45,31 @@ class DetailsScreen extends React.Component {
 
     //handledb query
     handleDataQuery = () => {
-        const db = SQLite.openDatabase('rvudb.db')
-        try{
-            db.transaction(tx => {
-                tx.executeSql(
-                    "SELECT * FROM RVU_APP_DATA WHERE hcpcs = ? or description LIKE ?;",
-                    [this.state.code, `%${this.state.description}%`],
-                    ((_,  { rows } ) => this.setState({queryResult: rows._array})),
-                    ((_, err) => {console.log('error in db select')})
-                )
-            })
-        } catch(err) {
-            if (this.state.debugEnabled) {
-                console.log('error in handleDataQuery')
+        //const db = SQLite.openDatabase('rvudb.db')
+        Keyboard.dismiss()
+        if (this.state.description.length > 3) {
+            try{
+                db.transaction(tx => {
+                    tx.executeSql(
+                        "SELECT * FROM RVU_APP_DATA WHERE hcpcs = ? or description LIKE ?;",
+                        [this.state.code, `%${this.state.description}%`],
+                        ((_,  { rows } ) => this.setState({queryResult: rows._array})),
+                        ((_, err) => {console.log('error in db select')})
+                    )
+                })
+            } catch(err) {
+                if (this.state.debugEnabled) {
+                    console.log('error in handleDataQuery')
+                }
             }
+        } else {
+            alert('description not long enough to search')
         }
         
     }
 
-    // hacky way of initializing a /sqlite directory on the device. This allows the loading of an already existing db to the same directory
-    makeSQLiteDir = () => {
+    // hacky way of initializing a /sqlite directory on the device. This allows the loading of an already existing db to the same directory MIGHT NOT BE NEEDED
+    /* makeSQLiteDir = () => {
 
         //creates an empty db that we wont use
         const dbTest = SQLite.openDatabase('dummy.db');
@@ -72,7 +79,7 @@ class DetailsScreen extends React.Component {
         } catch(e) {
             if (this.state.debugEnabled) console.log('error while executing SQL in dummy DB');
         }
-    }
+    } */
 
     handleCodeChange = code => {
        if (code >= 0 && code.length <= 6) {
@@ -81,17 +88,31 @@ class DetailsScreen extends React.Component {
        }
     }
 
-    handleSubmit = () => {
-        this.props.updateCode(this.state.code)
-        console.log(`handleSubmit executed code is ${this.state.code}`)
-        console.log(`${Object.keys(this.props.everything.codes.byIds)}`)
-        console.log(`${Object.values(this.props.everything.codes.byIds)}`)
-    }
-
     checkShowResults = () => {
         if(this.state.queryResult[0] === undefined){
             return false
         } else {return true}
+    }
+
+    /* onPressQueryResult = (value) => {
+        alert(`Confirm submission of ${value.description} for ${value.work_rvu} RVUs`)
+        this.props.addProcedure(value)
+        this.props.navigation.navigate('Home')
+    } */
+
+    onPressQueryResult = (value) => {
+        Alert.alert(
+            'Do you want to submit this procedure?',
+            `${value.description} for ${value.work_rvu} RVUs`,
+            [
+                {text: 'Cancel', onPress: () => console.log('Cancel pressed')},
+                {text: 'Confirm', onPress: () => {
+                    console.log('Confirm pressed')
+                    this.props.addProcedure(value)
+                    this.props.navigation.navigate('Home')
+                }},
+            ],
+        )
     }
     
 
@@ -113,32 +134,18 @@ class DetailsScreen extends React.Component {
             />
             <TouchableOpacity
                 style={styles.submitButton}
-                onPress={() => this.handleSubmit()}
-            >
-                <Text style={{fontSize: 30}}>Submit Button</Text>
-            </TouchableOpacity>
-            <Button
-                title='testing db'
                 onPress={() => this.handleDataQuery()}
-            />
-            <Text>
-                {this.props.everything.codes.allIds.toString()} {this.state.description}
-            </Text>
-            <Text>
-                Last code entered {this.props.everything.codes.allCodesArr[this.props.everything.codes.allCodesArr.length -1]}
-            </Text>
-            <Text>
-                {this.state.q}
-            </Text>
+            >
+                <Text style={{fontSize: 30}}>Search Procedures</Text>
+            </TouchableOpacity>
             <ScrollView>
                 {this.checkShowResults() && this.state.queryResult.map((value, index) => {
                     return(
-                        <TouchableOpacity style={styles.item} key={index} onPress={console.log('pressed')}>
+                        <TouchableOpacity style={styles.item} key={index} onPress={() => this.onPressQueryResult(value)}>
                             <Text key={index}>{value.hcpcs} {value.description}</Text>
                         </TouchableOpacity>
                     )
                 })}
-
             </ScrollView>
           </View>
       )
@@ -190,6 +197,7 @@ class DetailsScreen extends React.Component {
 
   const actions = {
       updateCode: updateCode,
+      addProcedure: addProcedure,
   }
 
   export default connect(mapStateFromTheStoreToProps, actions)(DetailsScreen)

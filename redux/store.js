@@ -1,7 +1,8 @@
 import {createStore} from 'redux'
 
+
 //import {updateCode} from './actions'
-import reducer from './reducer'
+import reducer from './reducers'
 
 //const initialState = {}
 

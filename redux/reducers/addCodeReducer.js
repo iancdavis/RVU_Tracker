@@ -1,5 +1,4 @@
-import { combineReducers } from 'redux'
-import {UPDATE_CODE} from './actions'
+import {UPDATE_CODE} from '../actions'
 
 const initialState = {
     allIds: [],
@@ -25,8 +24,4 @@ const addCodeReducer = (state = initialState, action) => {
     return state
 }
 
-const reducer = combineReducers({
-    codes: addCodeReducer,
-})
-
-export default reducer
+export default addCodeReducer

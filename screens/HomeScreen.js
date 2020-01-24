@@ -1,16 +1,89 @@
 import React from 'react'
-import { StyleSheet, Text, View, Button } from 'react-native'
+import { StyleSheet, Text, View, Button, TouchableOpacity, Alert } from 'react-native'
 import {connect} from 'react-redux'
 
+import {updateTotalRVU, removeProcedure} from '../redux/actions'
+
 class HomeScreen extends React.Component {
+
+  constructor(props){
+    super(props)
+    this.state = {
+
+    }
+  }
+  
+
+  componentDidMount() {
+
+  }
+
+  componentDidUpdate() {
+    
+  }
+
+
+
+  calculateTotalRVU = () => {
+    console.log('calculateTotalRVU called')
+    let totalRVU = 0
+    if (this.props.everything.procedure.allProcedures[0] === undefined){
+      return totalRVU
+    } else {
+        console.log('calculate rvu else called')
+        let arr = this.props.everything.procedure.allProcedures
+        let totalRVU = arr.reduce(rvuSumFunction, 0)
+
+        function rvuSumFunction(total, value) {
+          return(+total + +value.work_rvu)
+        }
+        console.log(`Total RVU ${JSON.stringify(totalRVU)}`)
+        this.props.updateTotalRVU(totalRVU)
+    }
+  }
+
+  handleHistoryTouch = (value) => {
+    console.log(`touched history in handle method index is ${this.props.everything.procedure.allProcedures.indexOf(value)}`)
+    Alert.alert(
+      'Do you want to remove this from your procedure history?',
+      `${value.description} for ${value.work_rvu} RVUs`,
+      [
+          {text: 'Cancel', onPress: () => console.log('Cancel pressed')},
+          {text: 'Remove', onPress: () => {
+              console.log('Remove pressed')
+              this.props.removeProcedure(this.props.everything.procedure.allProcedures.indexOf(value))
+
+          }},
+      ],
+    )
+  }
+
+  checkShowResults = () => {
+    if(this.props.everything.procedure.allProcedures[0] === undefined){
+        return false
+    } else {return true}
+  }
+
     render() {
+
       return (
         <View style={styles.container}>
           <View style={styles.historySection}>
-            <Text>Placeholder</Text>
-            <Text>All Past codes{JSON.stringify(this.props.everything.codes.allCodesArr)}</Text>
+            <Text style={{fontSize: 30}}>Your Procedure History</Text>
+            {this.checkShowResults() && this.props.everything.procedure.allProcedures.map((value, index) => {
+              return(
+              <TouchableOpacity style={styles.item} key={index} onPress={() => this.handleHistoryTouch(value)}>
+                <Text key={index}>{value.hcpcs} {value.description} {value.work_rvu}</Text>
+              </TouchableOpacity>
+              )
+            })}
+            <Text style={{fontSize: 20}}>Total RVUs: {JSON.stringify(this.props.everything.totalRVU.rvuTotal[this.props.everything.totalRVU.rvuTotal.length -1])}</Text>
           </View>
           <View style={styles.historySection}>
+            <Button
+              title='Update Total'
+              onPress={() => this.calculateTotalRVU()}
+            />
             <Button
               title="Add New Procedure"
               onPress={() => this.props.navigation.navigate('Details')}
@@ -34,6 +107,16 @@ class HomeScreen extends React.Component {
       alignItems: 'center',
       justifyContent: 'center',
     },
+    item: {
+      borderWidth: 1,
+      borderColor: 'black',
+      minWidth: 100,
+      marginTop: 20,
+      marginHorizontal: 20,
+      paddingHorizontal: 10,
+      paddingVertical: 5,
+      borderRadius: 3,
+    },
   });
 
   const mapStateToProps = state => ({
@@ -43,4 +126,9 @@ class HomeScreen extends React.Component {
 
 })
 
-export default connect(mapStateToProps)(HomeScreen)
+  const actions = {
+    updateTotalRVU: updateTotalRVU,
+    removeProcedure: removeProcedure,
+  }
+
+export default connect(mapStateToProps, actions)(HomeScreen)
