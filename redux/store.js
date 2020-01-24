@@ -1,16 +1,39 @@
 import {createStore} from 'redux'
+import { persistStore, persistReducer } from 'redux-persist'
+import { AsyncStorage } from 'react-native'
 
-
-//import {updateCode} from './actions'
 import reducer from './reducers'
 
-//const initialState = {}
+
+const persistConfig = {
+    key: 'root',
+    storage: AsyncStorage
+}
+
+const persistedReducer = persistReducer(persistConfig, reducer)
+
 
 const store = createStore(
-    reducer,
+    persistedReducer,
     window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(),
     )
 
-//store.dispatch(updateCode({foo: 'foo'}))
+const persistor = persistStore(store)
 
-export default store
+const getPersistor = () => persistor;
+const getStore = () => store;
+const getState = () => {
+    return store.getState();
+};
+
+export {
+    getStore,
+    getState,
+    getPersistor
+};
+
+export default {
+    getStore,
+    getState,
+    getPersistor
+}

@@ -9,8 +9,10 @@ import {Provider} from 'react-redux'
 import HomeScreen from './screens/HomeScreen.js'
 import DetailsScreen from './screens/DetailsScreen.js'
 import SettingsScreen from './screens/SettingsScreen.js'
-import store from './redux/store'
 import LoginScreen from './screens/LoginScreen.js';
+
+import { getStore, getPersistor } from './redux/store'
+import { PersistGate } from 'redux-persist/integration/react'
 
 const HomeStack = createStackNavigator(
   {
@@ -57,9 +59,15 @@ const AppContainer =  createAppContainer(
 
 export default class App extends React.Component {
   render() {
+    const myStore = getStore()
+    const myPersistor = getPersistor()
     return (
-      <Provider store={store}>
-        <AppContainer />
+      <Provider store={myStore}>
+        <PersistGate
+          persistor={myPersistor}
+        >
+          <AppContainer />
+        </PersistGate>
       </Provider>
 
     )
