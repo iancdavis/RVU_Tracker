@@ -8,6 +8,7 @@ const initialState = {
 const updateProcedureReducer = (state = initialState, action) => {
     if (action.type === ADD_PROCEDURE) { 
         const {procedure} = action.payload
+        procedure.date = new Date()
         return {
             ...state,
             allProcedures: [...state.allProcedures, procedure] ,

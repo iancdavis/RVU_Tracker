@@ -25,6 +25,7 @@ export const addProcedure = procedure => (
         payload: {
             procedure,
             id: ++nextProcedureId,
+            
         }
     }
 )

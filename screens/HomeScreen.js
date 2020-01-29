@@ -73,7 +73,7 @@ class HomeScreen extends React.Component {
             {this.checkShowResults() && this.props.everything.procedure.allProcedures.map((value, index) => {
               return(
               <TouchableOpacity style={styles.item} key={index} onPress={() => this.handleHistoryTouch(value)}>
-                <Text key={index}>{value.hcpcs} {value.description} {value.work_rvu}</Text>
+            <Text key={index}>{value.hcpcs} {value.description} {value.work_rvu} {value.date != undefined && value.date.toDateString()}</Text>
               </TouchableOpacity>
               )
             })}
