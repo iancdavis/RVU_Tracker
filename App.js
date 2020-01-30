@@ -49,6 +49,7 @@ const SettingsStack = createStackNavigator(
 )
 
 const AppContainer =  createAppContainer(
+  
   createDrawerNavigator(
     {
       Login: LoginScreen,
