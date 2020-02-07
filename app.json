@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "TODO: Come up with name",
-    "slug": "TODOName",
+    "name": "RVU_Tracker",
+    "slug": "RVU_Tracker",
     "privacy": "public",
     "sdkVersion": "36.0.0",
     "platforms": [

@@ -30,8 +30,6 @@ class DetailsScreen extends React.Component {
     }
 
     componentDidMount() {
-
-        //this.makeSQLiteDir()
         
         //load in db. Usin .mp4 file extension to bypass a known issue
         FileSystem.downloadAsync(
@@ -43,9 +41,8 @@ class DetailsScreen extends React.Component {
         })  
     }
 
-    //handledb query
+    //handle db query
     handleDataQuery = () => {
-        //const db = SQLite.openDatabase('rvudb.db')
         Keyboard.dismiss()
         if (this.state.description.length > 3) {
             try{
@@ -94,12 +91,6 @@ class DetailsScreen extends React.Component {
         } else {return true}
     }
 
-    /* onPressQueryResult = (value) => {
-        alert(`Confirm submission of ${value.description} for ${value.work_rvu} RVUs`)
-        this.props.addProcedure(value)
-        this.props.navigation.navigate('Home')
-    } */
-
     onPressQueryResult = (value) => {
         Alert.alert(
             'Do you want to submit this procedure?',
@@ -131,6 +122,7 @@ class DetailsScreen extends React.Component {
                 placeholder='Description'
                 onChangeText={description => this.setState({description})}
                 value={this.state.description}
+                autoFocus={true}
             />
             <TouchableOpacity
                 style={styles.submitButton}

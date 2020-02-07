@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { createAppContainer } from 'react-navigation';
+import { createAppContainer, createSwitchNavigator, createBottomTabNavigator } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
 import { createDrawerNavigator } from 'react-navigation-drawer';
 
@@ -14,7 +14,7 @@ import LoginScreen from './screens/LoginScreen.js';
 import { getStore, getPersistor } from './redux/store'
 import { PersistGate } from 'redux-persist/integration/react'
 
-const HomeStack = createStackNavigator(
+const MainStack = createStackNavigator(
   {
     Home: HomeScreen,
     Details: DetailsScreen,
@@ -32,31 +32,30 @@ const HomeStack = createStackNavigator(
   }
 )
 
-const SettingsStack = createStackNavigator(
+const MainDrawers = createDrawerNavigator(
   {
+    Procedures: MainStack,
     Settings: SettingsScreen,
-    Details: DetailsScreen,
   },
   {
-    initialRouteName: 'Settings',
-    defaultNavigationOptions: {
-      headerTitleStyle: {
-        fontFamily: 'serif',
-        color: 'red'
-      },
-    },
+    drawerPosition: 'left',
+    contentOptions: {
+      activeTintColor: 'green',
+      fontFamily: 'serif',
+
+    } 
   },
 )
 
-const AppContainer =  createAppContainer(
-  
-  createDrawerNavigator(
-    {
-      Login: LoginScreen,
-      Home: HomeStack,
-      Settings: SettingsStack,
-    })
-);
+
+const AppNavigator = createSwitchNavigator(
+  {
+    Login: LoginScreen,
+    Main: MainDrawers,
+  }
+)
+
+const AppContainer =  createAppContainer(AppNavigator);
 
 export default class App extends React.Component {
   render() {

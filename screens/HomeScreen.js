@@ -1,5 +1,5 @@
 import React from 'react'
-import { StyleSheet, Text, View, Button, TouchableOpacity, Alert } from 'react-native'
+import { StyleSheet, Text, View, Button, TouchableOpacity, Alert, ScrollView } from 'react-native'
 import {connect} from 'react-redux'
 
 import {updateTotalRVU, removeProcedure} from '../redux/actions'
@@ -70,13 +70,16 @@ class HomeScreen extends React.Component {
         <View style={styles.container}>
           <View style={styles.historySection}>
             <Text style={{fontSize: 30}}>Your Procedure History</Text>
-            {this.checkShowResults() && this.props.everything.procedure.allProcedures.map((value, index) => {
-              return(
-              <TouchableOpacity style={styles.item} key={index} onPress={() => this.handleHistoryTouch(value)}>
-                <Text key={index}>{value.hcpcs} {value.description} {value.work_rvu} {(new Date(value.date)).toDateString()}</Text>
-              </TouchableOpacity>
-              )
-            })}
+            <ScrollView>
+              {this.checkShowResults() && this.props.everything.procedure.allProcedures.map((value, index) => {
+                return(
+                <TouchableOpacity style={styles.item} key={index} onPress={() => this.handleHistoryTouch(value)}>
+                  <Text key={index}>{value.hcpcs} {value.description} {value.work_rvu} {(new Date(value.date)).toDateString()}</Text>
+                </TouchableOpacity>
+                )
+              })}
+            </ScrollView>
+            
             <Text style={{fontSize: 20}}>Total RVUs: {JSON.stringify(this.props.everything.totalRVU.rvuTotal[this.props.everything.totalRVU.rvuTotal.length -1])}</Text>
           </View>
           <View style={styles.historySection}>
