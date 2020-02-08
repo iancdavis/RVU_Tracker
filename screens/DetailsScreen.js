@@ -31,7 +31,7 @@ class DetailsScreen extends React.Component {
 
     componentDidMount() {
         
-        //load in db. Usin .mp4 file extension to bypass a known issue
+        //load in db. Using .mp4 file extension to bypass a known issue
         FileSystem.downloadAsync(
             Asset.fromModule(require('../assets/db/rvudb.mp4')).uri,
             `${FileSystem.documentDirectory}SQLite/rvudb.db`

@@ -13,17 +13,6 @@ class HomeScreen extends React.Component {
     }
   }
   
-
-  componentDidMount() {
-
-  }
-
-  componentDidUpdate() {
-    
-  }
-
-
-
   calculateTotalRVU = () => {
     console.log('calculateTotalRVU called')
     let totalRVU = 0
@@ -38,7 +27,8 @@ class HomeScreen extends React.Component {
           return(+total + +value.work_rvu)
         }
         console.log(`Total RVU ${JSON.stringify(totalRVU)}`)
-        this.props.updateTotalRVU(totalRVU)
+        //this.props.updateTotalRVU(totalRVU)
+        return totalRVU
     }
   }
 
@@ -66,6 +56,8 @@ class HomeScreen extends React.Component {
 
     render() {
 
+      const totalRVU = this.calculateTotalRVU()
+
       return (
         <View style={styles.container}>
           <View style={styles.historySection}>
@@ -80,13 +72,9 @@ class HomeScreen extends React.Component {
               })}
             </ScrollView>
             
-            <Text style={{fontSize: 20}}>Total RVUs: {JSON.stringify(this.props.everything.totalRVU.rvuTotal[this.props.everything.totalRVU.rvuTotal.length -1])}</Text>
+    <Text style={{fontSize: 20}}>Total RVUs: {totalRVU} </Text>
           </View>
           <View style={styles.historySection}>
-            <Button
-              title='Update Total'
-              onPress={() => this.calculateTotalRVU()}
-            />
             <Button
               title="Add New Procedure"
               onPress={() => this.props.navigation.navigate('Details')}
