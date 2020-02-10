@@ -1,5 +1,6 @@
 import React from 'react'
 import { StyleSheet, Text, TextInput, View, Button } from 'react-native'
+import { TouchableOpacity } from 'react-native-gesture-handler'
 
 export default class LoginScreen extends React.Component {
     state = {
@@ -32,6 +33,9 @@ export default class LoginScreen extends React.Component {
     render() {
       return (
         <View style={styles.container}>
+          <View style={styles.content}>
+            <Text style={styles.text}>Test text</Text>
+          </View>
           <Text style={styles.error}>{this.state.err}</Text>
           <TextInput
             placeholder="username"
@@ -46,6 +50,13 @@ export default class LoginScreen extends React.Component {
             secureTextEntry
           />
           <Button title="Press to Log In" onPress={this._login} />
+          <View style={styles.fixedFooter}>
+            <TouchableOpacity
+            onPress={() => alert('registration is being built')}
+            >
+              <Text style={styles.text}>Need To Register?</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       )
     }
@@ -56,11 +67,21 @@ export default class LoginScreen extends React.Component {
       justifyContent: 'center',
       flex: 1,
     },
+    content: {
+      flex: 1,
+    },
     text: {
       textAlign: 'center',
+      justifyContent: 'center'
     },
     error: {
       textAlign: 'center',
       color: 'red',
+    },
+    fixedFooter: {
+      flex: 1,
+      justifyContent: 'flex-end',
+      textAlign: 'center',
+      marginBottom: 36,
     },
   })

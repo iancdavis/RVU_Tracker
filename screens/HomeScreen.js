@@ -97,6 +97,7 @@ class HomeScreen extends React.Component {
       backgroundColor: '#fff',
       alignItems: 'center',
       justifyContent: 'center',
+      marginTop: 10,
     },
     item: {
       borderWidth: 1,
