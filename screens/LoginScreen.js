@@ -29,6 +29,11 @@ export default class LoginScreen extends React.Component {
     handlePasswordUpdate = password => {
       this.setState({password})
     }
+
+    handleRegistration = () => {
+      alert('in production')
+      this.props.navigation.navigate('Register')
+    }
   
     render() {
       return (
@@ -52,7 +57,7 @@ export default class LoginScreen extends React.Component {
           <Button title="Press to Log In" onPress={this._login} />
           <View style={styles.fixedFooter}>
             <TouchableOpacity
-            onPress={() => alert('registration is being built')}
+            onPress={this.handleRegistration}
             >
               <Text style={styles.text}>Need To Register?</Text>
             </TouchableOpacity>
@@ -81,6 +86,7 @@ export default class LoginScreen extends React.Component {
     fixedFooter: {
       flex: 1,
       justifyContent: 'flex-end',
+      alignItems: 'center',
       textAlign: 'center',
       marginBottom: 36,
     },

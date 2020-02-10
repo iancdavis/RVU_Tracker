@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { createAppContainer, createSwitchNavigator, createBottomTabNavigator } from 'react-navigation';
+import { createAppContainer, createSwitchNavigator } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
 import { createDrawerNavigator } from 'react-navigation-drawer';
 
@@ -10,9 +10,11 @@ import HomeScreen from './screens/HomeScreen.js'
 import DetailsScreen from './screens/DetailsScreen.js'
 import SettingsScreen from './screens/SettingsScreen.js'
 import LoginScreen from './screens/LoginScreen.js';
+import RegistrationScreen from './screens/RegistrationScreen.js';
 
 import { getStore, getPersistor } from './redux/store'
 import { PersistGate } from 'redux-persist/integration/react'
+
 
 const MainStack = createStackNavigator(
   {
@@ -51,6 +53,7 @@ const MainDrawers = createDrawerNavigator(
 const AppNavigator = createSwitchNavigator(
   {
     Login: LoginScreen,
+    Register: RegistrationScreen,
     Main: MainDrawers,
   }
 )

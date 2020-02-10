@@ -29,8 +29,23 @@ class DetailsScreen extends React.Component {
         }
     }
 
+    // hacky way of initializing a /sqlite directory on the device. This allows the loading of an already existing db to the same directory MIGHT NOT BE NEEDED
+    makeSQLiteDir = () => {
+
+        //creates an empty db that we wont use
+        const dbTest = SQLite.openDatabase('dummy.db')
+        try {
+            const success =  dbTest.transaction(tx => tx.executeSql(''))
+            console.log(`sucessful query on dummy db ${success}`)
+        } catch(e) {
+            if (this.state.debugEnabled) console.log('error while executing SQL in dummy DB')
+        }
+    }
+
     componentDidMount() {
-        
+
+        this.makeSQLiteDir()
+
         //load in db. Using .mp4 file extension to bypass a known issue
         FileSystem.downloadAsync(
             Asset.fromModule(require('../assets/db/rvudb.mp4')).uri,
@@ -64,19 +79,6 @@ class DetailsScreen extends React.Component {
         }
         
     }
-
-    // hacky way of initializing a /sqlite directory on the device. This allows the loading of an already existing db to the same directory MIGHT NOT BE NEEDED
-    /* makeSQLiteDir = () => {
-
-        //creates an empty db that we wont use
-        const dbTest = SQLite.openDatabase('dummy.db');
-        try {
-            const success =  dbTest.transaction(tx => tx.executeSql(''));
-            console.log(`sucessful query on dummy db ${success}`)
-        } catch(e) {
-            if (this.state.debugEnabled) console.log('error while executing SQL in dummy DB');
-        }
-    } */
 
     handleCodeChange = code => {
        if (code >= 0 && code.length <= 6) {
