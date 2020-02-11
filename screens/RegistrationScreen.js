@@ -2,6 +2,7 @@ import React from 'react'
 import { StyleSheet, Text, TextInput, View, Button } from 'react-native'
 
 import * as SQLite from 'expo-sqlite'
+import * as Crypto from 'expo-crypto'
 
 const db = SQLite.openDatabase('users.db')
 
@@ -31,6 +32,7 @@ export default class RegistrationScreen extends React.Component {
       }
 
     registrationTesting = () => {
+
         db.transaction(
             tx => {
                 tx.executeSql(
@@ -41,14 +43,32 @@ export default class RegistrationScreen extends React.Component {
             }
         )
     }
+
+    handleRegistrationButton = () => {
+      if (this.validateRegistrationForm()) {
+        this._register()
+      }   
+    }
+
+    validateRegistrationForm = () => {
+      if (!this.state.username | !this.state.password){
+        alert('must provide username and password')
+        return false
+      }else if (this.state.password !== this.state.confirmPassword){
+        alert('passwords do not match')
+        return false
+      }else return true
+    }
     
-    _register = () => {
+    _register = async () => {
+        let hash = await Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA512, this.state.password)
+
         db.transaction(
             tx => {
                 console.log('registering user')
                 tx.executeSql(
                     `INSERT INTO users (username, password) VALUES (?, ?);`,
-                    [this.state.username, this.state.password],
+                    [this.state.username, hash],
                     null,
                     (_, error) => console.log(`Error in db insert ${error}`)
                 )
@@ -62,6 +82,8 @@ export default class RegistrationScreen extends React.Component {
         //TODO only nav to home on succesfull transaction
         this.props.navigation.navigate('Home')
     }
+
+    
   
     handleUsernameUpdate = username => {
       this.setState({username})
@@ -98,7 +120,7 @@ export default class RegistrationScreen extends React.Component {
             onChangeText={this.handleConfirmPasswordUpdate}
             secureTextEntry
           />
-          <Button title="Press to Register" onPress={this._register} />
+          <Button title="Press to Register" onPress={this.handleRegistrationButton} />
           <Button title='db testing' onPress={this.registrationTesting}></Button>
         </View>
       )
