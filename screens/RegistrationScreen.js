@@ -51,13 +51,22 @@ export default class RegistrationScreen extends React.Component {
     }
 
     validateRegistrationForm = () => {
+      //both username and password must be provided
       if (!this.state.username | !this.state.password){
         alert('must provide username and password')
-        return false
-      }else if (this.state.password !== this.state.confirmPassword){
+        return false 
+      }
+      //passwords must match
+      else if (this.state.password !== this.state.confirmPassword){
         alert('passwords do not match')
         return false
-      }else return true
+      }
+      //password must be at least 7 characters long
+      else if (this.state.password.length < 7){
+        alert('password must be at least 7 characters long')
+        return false
+      }
+      else return true
     }
     
     _register = async () => {
