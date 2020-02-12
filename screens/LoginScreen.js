@@ -2,14 +2,47 @@ import React from 'react'
 import { StyleSheet, Text, TextInput, View, Button } from 'react-native'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 
+import * as SQLite from 'expo-sqlite'
+import * as Crypto from 'expo-crypto'
+
+const db = SQLite.openDatabase('users.db')
+
 export default class LoginScreen extends React.Component {
     state = {
       username: '',
       password: '',
     }
 
-    _login = () => {
-        this.props.navigation.navigate('Home')
+    _login = async () => {
+
+      let hash = await Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA512, this.state.password)
+
+      db.transaction(
+        tx => {
+            tx.executeSql(
+                'SELECT * FROM users WHERE username = ?;',
+                [this.state.username],
+                (_, {rows}) => {
+                  //check to see that the username returned a row
+                  if (rows._array.length){
+                    //check password
+                    if (rows._array[0].password == hash){
+                      this.props.navigation.navigate('Home')
+                    }
+                    else{
+                      alert('password incorect')
+                    }
+                  }
+                  else {
+                    alert("are you sure you've registered?")
+                  }
+                  
+                }
+            )
+        }
+      )
+
+    
     }
   
     /* _login = async () => {

@@ -36,9 +36,9 @@ export default class RegistrationScreen extends React.Component {
         db.transaction(
             tx => {
                 tx.executeSql(
-                    'SELECT * FROM users;',
-                    [],
-                    (_, {rows}) => console.log(`user db test ${JSON.stringify(rows)}`)
+                    'SELECT * FROM users WHERE username = ?;',
+                    [this.state.username],
+                    (_, {rows}) => console.log(`user db test ${JSON.stringify(rows._array.length)}`)
                 )
             }
         )
@@ -51,6 +51,22 @@ export default class RegistrationScreen extends React.Component {
     }
 
     validateRegistrationForm = () => {
+      //check if username is taken
+      db.transaction(
+        tx => {
+            tx.executeSql(
+                'SELECT * FROM users WHERE username = ?;',
+                [this.state.username],
+                (_, {rows}) => {
+                  if(rows._array.length){
+                    alert('username is taken')
+                    return false
+                  }
+                }
+            )
+        }
+      )
+      
       //both username and password must be provided
       if (!this.state.username | !this.state.password){
         alert('must provide username and password')
@@ -66,6 +82,17 @@ export default class RegistrationScreen extends React.Component {
         alert('password must be at least 7 characters long')
         return false
       }
+      //check if all characters in password are letters
+      else if (/^[a-zA-Z]+$/.test(this.state.password)){
+        alert('password must contain at least one number')
+        return false
+      }
+      //check if all characters in password are numbers
+      else if (/^[0-9]+$/.test(this.state.password)){
+        alert('password must contain at least one letter')
+        return false
+      }
+      //if all checks pass return true
       else return true
     }
     
