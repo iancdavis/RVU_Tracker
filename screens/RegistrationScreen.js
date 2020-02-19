@@ -4,6 +4,8 @@ import { StyleSheet, Text, TextInput, View, Button } from 'react-native'
 import * as SQLite from 'expo-sqlite'
 import * as Crypto from 'expo-crypto'
 
+import { _storeUserid, _retrieveUserid } from '../api.js'
+
 const db = SQLite.openDatabase('users.db')
 
 export default class RegistrationScreen extends React.Component {
@@ -77,7 +79,7 @@ export default class RegistrationScreen extends React.Component {
         alert('passwords do not match')
         return false
       }
-      //password must be at least 7 characters long
+      /* //password must be at least 7 characters long
       else if (this.state.password.length < 7){
         alert('password must be at least 7 characters long')
         return false
@@ -91,7 +93,7 @@ export default class RegistrationScreen extends React.Component {
       else if (/^[0-9]+$/.test(this.state.password)){
         alert('password must contain at least one letter')
         return false
-      }
+      } */
       //if all checks pass return true
       else return true
     }
@@ -109,12 +111,18 @@ export default class RegistrationScreen extends React.Component {
                     (_, error) => console.log(`Error in db insert ${error}`)
                 )
                 tx.executeSql(
-                    "SELECT * FROM users",
-                    [],
-                    (_, { rows }) => console.log(JSON.stringify(rows))
+                    "SELECT * FROM users WHERE username = ?",
+                    [this.state.username],
+                    (_, { rows }) => {
+                      const stringUserid = JSON.stringify(rows._array[0].id)
+                      _storeUserid(stringUserid)
+
+                    }
                 )
             }
         )
+        //check userid retireval
+        _retrieveUserid()
         //TODO only nav to home on succesfull transaction
         this.props.navigation.navigate('Home')
     }

@@ -4,6 +4,10 @@ export const ADD_PROCEDURE = 'ADD_PROCEDURE'
 export const UPDATE_TOTAL_RVU = 'UPDATE_TOTAL_RVU'
 export const REMOVE_PROCEDURE = 'REMOVE_PROCEDURE'
 
+//auth action types
+export const LOGIN_SUCCESS = 'LOGIN_SUCCESS'
+export const LOGIN_FAIL = 'LOGIN_FAIL'
+
 // action creators
 let nextCodeId = 0
 

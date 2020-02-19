@@ -5,12 +5,32 @@ import { TouchableOpacity } from 'react-native-gesture-handler'
 import * as SQLite from 'expo-sqlite'
 import * as Crypto from 'expo-crypto'
 
+import { _storeUserid, _retrieveUserid } from '../api.js'
+
+import { getPersistor } from '../redux/store.js'
+
+
 const db = SQLite.openDatabase('users.db')
 
 export default class LoginScreen extends React.Component {
     state = {
       username: '',
       password: '',
+    }
+
+    //BUTTON FOR TESTING ONLY
+    clearUserData = () => {
+      db.transaction(
+        tx => {
+          tx.executeSql(
+            'DROP TABLE IF EXISTS users;',
+            null,
+            console.log('user table dropped'),
+            (_, error) => console.log(`table not dropped error: ${error}`)
+          )
+        }
+      )
+
     }
 
     _login = async () => {
@@ -27,6 +47,10 @@ export default class LoginScreen extends React.Component {
                   if (rows._array.length){
                     //check password
                     if (rows._array[0].password == hash){
+                      //store session userid
+                      _storeUserid(JSON.stringify(rows._array[0].id))
+
+
                       this.props.navigation.navigate('Home')
                     }
                     else{
@@ -67,6 +91,18 @@ export default class LoginScreen extends React.Component {
       alert('in production')
       this.props.navigation.navigate('Register')
     }
+
+    //FOR TESTING
+    handlePersistPurge = () => {
+
+      const p = getPersistor()
+      p.purge().then(success => {
+        console.log(`persistor succesfully purged ${success}`)
+      }, failure => {
+        console.log(`ERROR in persistor purge ${failure}`)
+      })
+
+    }
   
     render() {
       return (
@@ -88,6 +124,8 @@ export default class LoginScreen extends React.Component {
             secureTextEntry
           />
           <Button title="Press to Log In" onPress={this._login} />
+          <Button title="Drop user table" onPress={this.clearUserData}/>
+          <Button title="flush persist for testing" onPress={this.handlePersistPurge} />
           <View style={styles.fixedFooter}>
             <TouchableOpacity
             onPress={this.handleRegistration}

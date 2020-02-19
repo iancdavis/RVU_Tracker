@@ -4,6 +4,8 @@ import {connect} from 'react-redux'
 
 import {updateTotalRVU, removeProcedure} from '../redux/actions'
 
+import { _storeUserid, _retrieveUserid } from '../api.js'
+
 class HomeScreen extends React.Component {
 
   constructor(props){
@@ -16,7 +18,7 @@ class HomeScreen extends React.Component {
   calculateTotalRVU = () => {
     console.log('calculateTotalRVU called')
     let totalRVU = 0
-    if (this.props.everything.procedure.allProcedures[0] === undefined){
+    if (this.props.everything.procedure.allProcedures === undefined){
       return totalRVU
     } else {
         console.log('calculate rvu else called')
@@ -79,6 +81,10 @@ class HomeScreen extends React.Component {
               title="Add New Procedure"
               onPress={() => this.props.navigation.navigate('Details')}
             />
+            {<Button
+              title="test user id"
+              onPress={() => _retrieveUserid()}
+            />}
           </View>
         </View>
       );

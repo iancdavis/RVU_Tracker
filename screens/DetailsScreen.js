@@ -29,7 +29,7 @@ class DetailsScreen extends React.Component {
         }
     }
 
-    // hacky way of initializing a /sqlite directory on the device. This allows the loading of an already existing db to the same directory MIGHT NOT BE NEEDED
+    // hacky initilization of a /sqlite directory on the device. This allows the loading of an already existing db to the same directory MIGHT NOT BE NEEDED
     makeSQLiteDir = () => {
 
         //creates an empty db that we wont use
@@ -99,8 +99,8 @@ class DetailsScreen extends React.Component {
             `${value.description} for ${value.work_rvu} RVUs`,
             [
                 {text: 'Cancel', onPress: () => console.log('Cancel pressed')},
-                {text: 'Confirm', onPress: () => {
-                    console.log('Confirm pressed')
+                {text: `Confirm TEST value ${value}`, onPress: () => {
+                    console.log(`Confirm pressed`)
                     this.props.addProcedure(value)
                     this.props.navigation.navigate('Home')
                 }},
