@@ -1,3 +1,6 @@
+import { _retrieveUserid } from '../api'
+
+
 // action types
 export const UPDATE_CODE = 'UPDATE_CODE'
 export const ADD_PROCEDURE = 'ADD_PROCEDURE'
@@ -23,16 +26,22 @@ export const updateCode = update => (
 
 let nextProcedureId = 0
 
-export const addProcedure = procedure => (
-    {
-        type: ADD_PROCEDURE,
-        payload: {
-            procedure,
-            id: ++nextProcedureId,
-            
-        }
+export const addProcedure = procedure => async dispatch => {
+    try {
+        const userid = await _retrieveUserid()
+        dispatch({
+            type: ADD_PROCEDURE,
+            payload: {
+                procedure,
+                id: ++nextProcedureId,
+                userid,
+            },
+
+        })
+    } catch (err) {
+        console.log(`err in actions.js addProcedure`)
     }
-)
+}
 
 export const updateTotalRVU = update => (
     {

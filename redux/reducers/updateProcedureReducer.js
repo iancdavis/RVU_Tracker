@@ -11,7 +11,7 @@ const updateProcedureReducer = (state = initialState, action) => {
     if (action.type === ADD_PROCEDURE) { 
         const {procedure} = action.payload
         procedure.date = new Date()
-        procedure.user = _retrieveUserid()
+        procedure.user = action.payload.userid
         console.log(`user value in reducer ${JSON.stringify(procedure.user)}`)
         return {
             ...state,

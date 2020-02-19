@@ -1,4 +1,5 @@
-import {createStore} from 'redux'
+import {createStore, applyMiddleware, compose} from 'redux'
+import thunk from 'redux-thunk'
 import { persistStore, persistReducer } from 'redux-persist'
 import { AsyncStorage } from 'react-native'
 
@@ -10,13 +11,13 @@ const persistConfig = {
     storage: AsyncStorage
 }
 
+const composeEnhancer = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
+
+
 const persistedReducer = persistReducer(persistConfig, reducer)
 
 
-const store = createStore(
-    persistedReducer,
-    window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(),
-    )
+const store = createStore( persistedReducer, composeEnhancer(applyMiddleware(thunk)))
 
 const persistor = persistStore(store)
 
