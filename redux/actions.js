@@ -1,5 +1,3 @@
-import { _retrieveUserid } from '../api'
-
 
 // action types
 export const UPDATE_CODE = 'UPDATE_CODE'
@@ -7,9 +5,8 @@ export const ADD_PROCEDURE = 'ADD_PROCEDURE'
 export const UPDATE_TOTAL_RVU = 'UPDATE_TOTAL_RVU'
 export const REMOVE_PROCEDURE = 'REMOVE_PROCEDURE'
 
-//auth action types
-export const LOGIN_SUCCESS = 'LOGIN_SUCCESS'
-export const LOGIN_FAIL = 'LOGIN_FAIL'
+export const UPDATE_CURRENT_USERID = 'UPDATE_CURRENT_USERID'
+
 
 // action creators
 let nextCodeId = 0
@@ -26,22 +23,16 @@ export const updateCode = update => (
 
 let nextProcedureId = 0
 
-export const addProcedure = procedure => async dispatch => {
-    try {
-        const userid = await _retrieveUserid()
-        dispatch({
-            type: ADD_PROCEDURE,
-            payload: {
-                procedure,
-                id: ++nextProcedureId,
-                userid,
-            },
-
-        })
-    } catch (err) {
-        console.log(`err in actions.js addProcedure`)
-    }
-}
+export const addProcedure = (procedure, currentUserID) => (
+    {
+        type: ADD_PROCEDURE,
+        payload: {
+            procedure,
+            id: ++nextProcedureId,
+            currentUserID,
+        },
+    } 
+)
 
 export const updateTotalRVU = update => (
     {
@@ -57,6 +48,15 @@ export const removeProcedure = index => (
         type: REMOVE_PROCEDURE,
         payload: {
             index,
+        }
+    }
+)
+
+export const updateCurrentUserid = userid => (
+    {
+        type: UPDATE_CURRENT_USERID,
+        payload: {
+            userid,
         }
     }
 )

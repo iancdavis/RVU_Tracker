@@ -5,14 +5,15 @@ import { TouchableOpacity } from 'react-native-gesture-handler'
 import * as SQLite from 'expo-sqlite'
 import * as Crypto from 'expo-crypto'
 
-import { _storeUserid, _retrieveUserid } from '../api.js'
-
 import { getPersistor } from '../redux/store.js'
+
+import { updateCurrentUserid } from '../redux/actions.js'
+import {connect} from 'react-redux'
 
 
 const db = SQLite.openDatabase('users.db')
 
-export default class LoginScreen extends React.Component {
+class LoginScreen extends React.Component {
     state = {
       username: '',
       password: '',
@@ -47,9 +48,8 @@ export default class LoginScreen extends React.Component {
                   if (rows._array.length){
                     //check password
                     if (rows._array[0].password == hash){
-                      //store session userid
-                      _storeUserid(JSON.stringify(rows._array[0].id))
-
+                      //store session userid in redux
+                      this.props.updateCurrentUserid(rows._array[0].id)
 
                       this.props.navigation.navigate('Home')
                     }
@@ -88,7 +88,6 @@ export default class LoginScreen extends React.Component {
     }
 
     handleRegistration = () => {
-      alert('in production')
       this.props.navigation.navigate('Register')
     }
 
@@ -162,3 +161,15 @@ export default class LoginScreen extends React.Component {
       marginBottom: 36,
     },
   })
+
+const mapStateToProps = state => ({
+  
+  everything: state,
+
+})
+
+  const actions = {
+    updateCurrentUserid: updateCurrentUserid,
+  }
+
+export default connect(mapStateToProps, actions)(LoginScreen)

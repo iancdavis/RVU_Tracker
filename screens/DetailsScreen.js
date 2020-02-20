@@ -99,9 +99,9 @@ class DetailsScreen extends React.Component {
             `${value.description} for ${value.work_rvu} RVUs`,
             [
                 {text: 'Cancel', onPress: () => console.log('Cancel pressed')},
-                {text: `Confirm TEST value ${value}`, onPress: () => {
+                {text: `Confirm`, onPress: () => {
                     console.log(`Confirm pressed`)
-                    this.props.addProcedure(value)
+                    this.props.addProcedure(value, this.props.currentUserID)
                     this.props.navigation.navigate('Home')
                 }},
             ],
@@ -182,10 +182,11 @@ class DetailsScreen extends React.Component {
     },
   });
 
-  const mapStateFromTheStoreToProps = state => ({
+  const mapStateToProps = state => ({
       //access in component with this.props.codes.codes
       //state.codes come from whatever name is used in the reducer
       everything: state,
+      currentUserID: state.currentUser.currentUserID
 
   })
 
@@ -194,4 +195,4 @@ class DetailsScreen extends React.Component {
       addProcedure: addProcedure,
   }
 
-  export default connect(mapStateFromTheStoreToProps, actions)(DetailsScreen)
+  export default connect(mapStateToProps, actions)(DetailsScreen)

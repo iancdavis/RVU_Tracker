@@ -4,11 +4,12 @@ import { StyleSheet, Text, TextInput, View, Button } from 'react-native'
 import * as SQLite from 'expo-sqlite'
 import * as Crypto from 'expo-crypto'
 
-import { _storeUserid, _retrieveUserid } from '../api.js'
+import { updateCurrentUserid } from '../redux/actions.js'
+import {connect} from 'react-redux'
 
 const db = SQLite.openDatabase('users.db')
 
-export default class RegistrationScreen extends React.Component {
+class RegistrationScreen extends React.Component {
     state = {
       username: '',
       password: '',
@@ -111,18 +112,16 @@ export default class RegistrationScreen extends React.Component {
                     (_, error) => console.log(`Error in db insert ${error}`)
                 )
                 tx.executeSql(
-                    "SELECT * FROM users WHERE username = ?",
-                    [this.state.username],
-                    (_, { rows }) => {
-                      const stringUserid = JSON.stringify(rows._array[0].id)
-                      _storeUserid(stringUserid)
-
-                    }
+                  "SELECT * FROM users WHERE username = ?",
+                  [this.state.username],
+                  (_, { rows }) => {
+                    const stringUserid = JSON.stringify(rows._array[0].id)
+              
+                    this.props.updateCurrentUserid(stringUserid)
+                  }
                 )
             }
         )
-        //check userid retireval
-        _retrieveUserid()
         //TODO only nav to home on succesfull transaction
         this.props.navigation.navigate('Home')
     }
@@ -188,3 +187,9 @@ export default class RegistrationScreen extends React.Component {
       color: 'red',
     },
   })
+  
+    const actions = {
+      updateCurrentUserid: updateCurrentUserid,
+    }
+  
+  export default connect(null, actions)(RegistrationScreen)

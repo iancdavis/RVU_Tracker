@@ -1,7 +1,4 @@
 import {ADD_PROCEDURE, REMOVE_PROCEDURE} from '../actions'
-import { _retrieveUserid } from '../../api'
-
-
 
 const initialState = {
     allProcedures: []
@@ -11,7 +8,7 @@ const updateProcedureReducer = (state = initialState, action) => {
     if (action.type === ADD_PROCEDURE) { 
         const {procedure} = action.payload
         procedure.date = new Date()
-        procedure.user = action.payload.userid
+        procedure.user = action.payload.currentUserID
         console.log(`user value in reducer ${JSON.stringify(procedure.user)}`)
         return {
             ...state,
@@ -32,13 +29,3 @@ const updateProcedureReducer = (state = initialState, action) => {
 }
 
 export default updateProcedureReducer
-
-
-
-/* user: {
-    procedures: {
-        allProcedures: {
-            allProcedures[]...
-        }
-    }
-} */

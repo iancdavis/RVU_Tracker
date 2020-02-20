@@ -4,8 +4,6 @@ import {connect} from 'react-redux'
 
 import {updateTotalRVU, removeProcedure} from '../redux/actions'
 
-import { _storeUserid, _retrieveUserid } from '../api.js'
-
 class HomeScreen extends React.Component {
 
   constructor(props){
@@ -22,14 +20,12 @@ class HomeScreen extends React.Component {
       return totalRVU
     } else {
         console.log('calculate rvu else called')
-        let arr = this.props.everything.procedure.allProcedures
+        let arr = this.props.everything.procedure.allProcedures.filter(item => item.user == this.props.currentUserID)
         let totalRVU = arr.reduce(rvuSumFunction, 0)
 
         function rvuSumFunction(total, value) {
           return(+total + +value.work_rvu)
         }
-        console.log(`Total RVU ${JSON.stringify(totalRVU)}`)
-        //this.props.updateTotalRVU(totalRVU)
         return totalRVU
     }
   }
@@ -66,11 +62,14 @@ class HomeScreen extends React.Component {
             <Text style={{fontSize: 30}}>Your Procedure History</Text>
             <ScrollView>
               {this.checkShowResults() && this.props.everything.procedure.allProcedures.map((value, index) => {
-                return(
-                <TouchableOpacity style={styles.item} key={index} onPress={() => this.handleHistoryTouch(value)}>
-                  <Text key={index}>{value.hcpcs} {value.description} {value.work_rvu} {(new Date(value.date)).toDateString()}</Text>
-                </TouchableOpacity>
-                )
+                console.log(`Test in render history list value.user: ${value.user} userid: ${this.props.currentUserID}`)
+                if(value.user == this.props.currentUserID){
+                  return(
+                    <TouchableOpacity style={styles.item} key={index} onPress={() => this.handleHistoryTouch(value)}>
+                      <Text key={index}>{value.hcpcs} {value.description} {value.work_rvu} {(new Date(value.date)).toDateString()}</Text>
+                    </TouchableOpacity>
+                  )
+                }
               })}
             </ScrollView>
             
@@ -81,10 +80,6 @@ class HomeScreen extends React.Component {
               title="Add New Procedure"
               onPress={() => this.props.navigation.navigate('Details')}
             />
-            {<Button
-              title="test user id"
-              onPress={() => _retrieveUserid()}
-            />}
           </View>
         </View>
       );
@@ -118,9 +113,8 @@ class HomeScreen extends React.Component {
   });
 
   const mapStateToProps = state => ({
-    //access in component with this.props.codes.codes
-    //state.codes come from whatever name is used in the reducer
     everything: state,
+    currentUserID: state.currentUser.currentUserID
 
 })
 
