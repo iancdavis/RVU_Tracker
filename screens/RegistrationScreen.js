@@ -50,7 +50,7 @@ class RegistrationScreen extends React.Component {
     }
     
    //FOR TESTING ONLY
-    registrationTesting = () => {
+    /* registrationTesting = () => {
 
         db.transaction(
             tx => {
@@ -61,22 +61,12 @@ class RegistrationScreen extends React.Component {
                 )
             }
         )
-    }
+    } */
 
     handleRegistrationButton = () => {
       if (this.validateRegistrationForm()) {
         this._register()
       }   
-    }
-
-    //test code
-    select = () => {
-      this.executeSql('select * from locations', []).then(items => this.setState({items})  );
-    }
-    //end test code
-
-    checkUsernameAvailability = () =>{
-      
     }
 
     validateRegistrationForm = () => {
@@ -179,7 +169,7 @@ class RegistrationScreen extends React.Component {
             secureTextEntry
           />
           <Button title="Press to Register" onPress={this.handleRegistrationButton} />
-          <Button title='db testing' onPress={this.registrationTesting}></Button>
+          {/* <Button title='db testing' onPress={this.registrationTesting}></Button> */}
         </View>
       )
     }
