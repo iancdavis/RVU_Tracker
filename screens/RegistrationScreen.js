@@ -34,8 +34,7 @@ class RegistrationScreen extends React.Component {
             }
         )
       }
-    
-   /*  //FOR TESTING ONLY
+
     registrationTesting = () => {
 
         db.transaction(
@@ -47,7 +46,7 @@ class RegistrationScreen extends React.Component {
                 )
             }
         )
-    } */
+    }
 
     handleRegistrationButton = () => {
       if (this.validateRegistrationForm()) {
@@ -88,7 +87,7 @@ class RegistrationScreen extends React.Component {
         alert('passwords do not match')
         return false
       }
-      //password must be at least 7 characters long
+      /* //password must be at least 7 characters long
       else if (this.state.password.length < 7){
         alert('password must be at least 7 characters long')
         return false
@@ -102,12 +101,16 @@ class RegistrationScreen extends React.Component {
       else if (/^[0-9]+$/.test(this.state.password)){
         alert('password must contain at least one letter')
         return false
+<<<<<<< HEAD
       }
       //check if username taken
       else if (this.state.usernameTaken){
         alert('username taken')
         return false
       }
+=======
+      } */
+>>>>>>> parent of 33fbb27... cleanup commit before test publish
       //if all checks pass return true
       else return true
     }
@@ -177,7 +180,7 @@ class RegistrationScreen extends React.Component {
             secureTextEntry
           />
           <Button title="Press to Register" onPress={this.handleRegistrationButton} />
-          {/* <Button title='db testing' onPress={this.registrationTesting}></Button> */}
+          <Button title='db testing' onPress={this.registrationTesting}></Button>
         </View>
       )
     }

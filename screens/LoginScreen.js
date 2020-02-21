@@ -17,7 +17,7 @@ class LoginScreen extends React.Component {
       password: '',
     }
 
-    /* //BUTTON FOR TESTING ONLY
+    //BUTTON FOR TESTING ONLY
     clearUserData = () => {
       db.transaction(
         tx => {
@@ -30,7 +30,7 @@ class LoginScreen extends React.Component {
         }
       )
 
-    } */
+    }
 
     _login = async () => {
 
@@ -67,6 +67,16 @@ class LoginScreen extends React.Component {
     
     }
   
+    /* _login = async () => {
+      try {
+        const success = await login(this.state.username, this.state.password)
+        this.props.navigation.navigate('Main')
+      } catch (err) {
+        const errMessage = err.message
+        this.setState({err: errMessage})
+      }
+    } */
+  
     handleUsernameUpdate = username => {
       this.setState({username})
     }
@@ -79,7 +89,7 @@ class LoginScreen extends React.Component {
       this.props.navigation.navigate('Register')
     }
 
-    /* //FOR TESTING
+    //FOR TESTING
     handlePersistPurge = () => {
 
       const p = getPersistor()
@@ -89,7 +99,7 @@ class LoginScreen extends React.Component {
         console.log(`ERROR in persistor purge ${failure}`)
       })
 
-    } */
+    }
   
     render() {
       return (
@@ -111,8 +121,8 @@ class LoginScreen extends React.Component {
             secureTextEntry
           />
           <Button title="Press to Log In" onPress={this._login} />
-          {/* <Button title="Drop user table" onPress={this.clearUserData}/>
-          <Button title="flush persist for testing" onPress={this.handlePersistPurge} /> */}
+          <Button title="Drop user table" onPress={this.clearUserData}/>
+          <Button title="flush persist for testing" onPress={this.handlePersistPurge} />
           <View style={styles.fixedFooter}>
             <TouchableOpacity
             onPress={this.handleRegistration}
