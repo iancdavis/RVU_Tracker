@@ -14,6 +14,7 @@ class RegistrationScreen extends React.Component {
       username: '',
       password: '',
       confirmPassword: '',
+      takenUsernames: []
     }
 
     componentDidMount() {
@@ -32,7 +33,21 @@ class RegistrationScreen extends React.Component {
                 )
             }
         )
-      }
+        //get list of usernames and add them to state
+        db.transaction(
+          tx => {
+              tx.executeSql(
+                  'SELECT username FROM users;',
+                  null,
+                  (_, {rows}) => {
+                      let un = rows._array.map(a => a.username)
+                      console.log(`taken usernames: ${un}`)
+                      this.setState({takenUsernames: un})
+                  }
+              )
+          }
+        )
+    }
     
    /*  //FOR TESTING ONLY
     registrationTesting = () => {
@@ -54,25 +69,24 @@ class RegistrationScreen extends React.Component {
       }   
     }
 
+    //test code
+    select = () => {
+      this.executeSql('select * from locations', []).then(items => this.setState({items})  );
+    }
+    //end test code
+
+    checkUsernameAvailability = () =>{
+      
+    }
+
     validateRegistrationForm = () => {
       //check if username is taken
-      db.transaction(
-        tx => {
-            tx.executeSql(
-                'SELECT * FROM users WHERE username = ?;',
-                [this.state.username],
-                (_, {rows}) => {
-                  if(rows._array.length){
-                    alert('username is taken')
-                    return false
-                  }
-                }
-            )
-        }
-      )
-      
+      if (this.state.takenUsernames.includes(this.state.username)){
+        alert('username taken')
+        return false
+      }
       //both username and password must be provided
-      if (!this.state.username | !this.state.password){
+      else if (!this.state.username | !this.state.password){
         alert('must provide username and password')
         return false 
       }
