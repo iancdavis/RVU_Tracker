@@ -14,6 +14,7 @@ class RegistrationScreen extends React.Component {
       username: '',
       password: '',
       confirmPassword: '',
+      usernameTaken: null,
     }
 
     componentDidMount() {
@@ -62,9 +63,15 @@ class RegistrationScreen extends React.Component {
                 'SELECT * FROM users WHERE username = ?;',
                 [this.state.username],
                 (_, {rows}) => {
+                  //check if the username exists
                   if(rows._array.length){
-                    alert('username is taken')
-                    return false
+                    //alert('username is taken')
+                    console.log(`username exists ${rows._array}`)
+                    this.setState({usernameTaken: true})
+                  }
+                  else {
+                    console.log(`username does not exists ${rows._array}`)
+                    this.setState({usernameTaken: false})
                   }
                 }
             )
@@ -94,6 +101,11 @@ class RegistrationScreen extends React.Component {
       //check if all characters in password are numbers
       else if (/^[0-9]+$/.test(this.state.password)){
         alert('password must contain at least one letter')
+        return false
+      }
+      //check if username taken
+      else if (this.state.usernameTaken){
+        alert('username taken')
         return false
       }
       //if all checks pass return true

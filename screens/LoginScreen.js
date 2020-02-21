@@ -5,8 +5,6 @@ import { TouchableOpacity } from 'react-native-gesture-handler'
 import * as SQLite from 'expo-sqlite'
 import * as Crypto from 'expo-crypto'
 
-import { getPersistor } from '../redux/store.js'
-
 import { updateCurrentUserid } from '../redux/actions.js'
 import {connect} from 'react-redux'
 
