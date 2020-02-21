@@ -14,7 +14,7 @@ class RegistrationScreen extends React.Component {
       username: '',
       password: '',
       confirmPassword: '',
-      usernameTaken: null,
+      takenUsernames: []
     }
 
     componentDidMount() {
@@ -33,8 +33,23 @@ class RegistrationScreen extends React.Component {
                 )
             }
         )
-      }
-
+        //get list of usernames and add them to state
+        db.transaction(
+          tx => {
+              tx.executeSql(
+                  'SELECT username FROM users;',
+                  null,
+                  (_, {rows}) => {
+                      let un = rows._array.map(a => a.username)
+                      console.log(`taken usernames: ${un}`)
+                      this.setState({takenUsernames: un})
+                  }
+              )
+          }
+        )
+    }
+    
+   /*  //FOR TESTING ONLY
     registrationTesting = () => {
 
         db.transaction(
@@ -54,8 +69,19 @@ class RegistrationScreen extends React.Component {
       }   
     }
 
+    //test code
+    select = () => {
+      this.executeSql('select * from locations', []).then(items => this.setState({items})  );
+    }
+    //end test code
+
+    checkUsernameAvailability = () =>{
+      
+    }
+
     validateRegistrationForm = () => {
       //check if username is taken
+<<<<<<< HEAD
       db.transaction(
         tx => {
             tx.executeSql(
@@ -77,8 +103,14 @@ class RegistrationScreen extends React.Component {
         }
       )
       
+=======
+      if (this.state.takenUsernames.includes(this.state.username)){
+        alert('username taken')
+        return false
+      }
+>>>>>>> 313dd0c8f182d7c6252dbc83a4fea6a26358d532
       //both username and password must be provided
-      if (!this.state.username | !this.state.password){
+      else if (!this.state.username | !this.state.password){
         alert('must provide username and password')
         return false 
       }
