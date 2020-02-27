@@ -59,12 +59,28 @@ class DetailsScreen extends React.Component {
     //handle db query
     handleDataQuery = () => {
         Keyboard.dismiss()
-        if (this.state.description.length > 3) {
+        if (this.state.code){
             try{
                 db.transaction(tx => {
                     tx.executeSql(
-                        "SELECT * FROM RVU_APP_DATA WHERE hcpcs = ? or description LIKE ?;",
-                        [this.state.code, `%${this.state.description}%`],
+                        "SELECT * FROM RVU_APP_DATA WHERE hcpcs LIKE ?;",
+                        [`${this.state.code}%`],
+                        ((_,  { rows } ) => this.setState({queryResult: rows._array})),
+                        ((_, err) => {console.log('error in db select')})
+                    )
+                })
+            } catch(err) {
+                if (this.state.debugEnabled) {
+                    console.log('error in handleDataQuery')
+                }
+            }
+        }
+        else if (this.state.description.length > 3) {
+            try{
+                db.transaction(tx => {
+                    tx.executeSql(
+                        "SELECT * FROM RVU_APP_DATA WHERE description LIKE ?;",
+                        [`%${this.state.description}%`],
                         ((_,  { rows } ) => this.setState({queryResult: rows._array})),
                         ((_, err) => {console.log('error in db select')})
                     )
@@ -83,7 +99,6 @@ class DetailsScreen extends React.Component {
     handleCodeChange = code => {
        if (code >= 0 && code.length <= 6) {
            this.setState({code})
-           console.log('handleCodeChange executed')
        }
     }
 
