@@ -25,7 +25,7 @@ const MainStack = createStackNavigator(
     initialRountName: 'Home',
     defaultNavigationOptions: {
       headerTitleStyle: {
-        fontFamily: 'serif',
+        //fontFamily: 'serif',
       },
       headerStyle: {
         backgroundColor: '#f4511e'
@@ -43,7 +43,7 @@ const MainDrawers = createDrawerNavigator(
     drawerPosition: 'left',
     contentOptions: {
       activeTintColor: 'green',
-      fontFamily: 'serif',
+      //fontFamily: 'serif',
 
     } 
   },

@@ -29,19 +29,6 @@ class DetailsScreen extends React.Component {
         }
     }
 
-    // hacky initilization of a /sqlite directory on the device. This allows the loading of an already existing db to the same directory MIGHT NOT BE NEEDED
-    makeSQLiteDir = () => {
-
-        //creates an empty db that we wont use
-        const dbTest = SQLite.openDatabase('dummy.db')
-        try {
-            const success =  dbTest.transaction(tx => tx.executeSql(''))
-            console.log(`sucessful query on dummy db ${success}`)
-        } catch(e) {
-            if (this.state.debugEnabled) console.log('error while executing SQL in dummy DB')
-        }
-    }
-
     componentDidMount() {
 
         this.makeSQLiteDir()
@@ -56,6 +43,19 @@ class DetailsScreen extends React.Component {
         })  
     }
 
+    // hacky initilization of a /sqlite directory on the device. This allows the loading of an already existing db to the same directory MIGHT NOT BE NEEDED
+    makeSQLiteDir = () => {
+
+        //creates an empty db that we wont use
+        const dbTest = SQLite.openDatabase('dummy.db')
+        try {
+            const success =  dbTest.transaction(tx => tx.executeSql(''))
+            console.log(`sucessful query on dummy db ${success}`)
+        } catch(e) {
+            if (this.state.debugEnabled) console.log('error while executing SQL in dummy DB')
+        }
+    }
+
     //handle db query
     handleDataQuery = () => {
         Keyboard.dismiss()
@@ -66,7 +66,7 @@ class DetailsScreen extends React.Component {
                         "SELECT * FROM RVU_APP_DATA WHERE hcpcs LIKE ?;",
                         [`${this.state.code}%`],
                         ((_,  { rows } ) => this.setState({queryResult: rows._array})),
-                        ((_, err) => {console.log('error in db select')})
+                        ((_, err) => {console.log(`error in code db select ${err}`)})
                     )
                 })
             } catch(err) {
@@ -82,7 +82,7 @@ class DetailsScreen extends React.Component {
                         "SELECT * FROM RVU_APP_DATA WHERE description LIKE ?;",
                         [`%${this.state.description}%`],
                         ((_,  { rows } ) => this.setState({queryResult: rows._array})),
-                        ((_, err) => {console.log('error in db select')})
+                        ((_, err) => {console.log(`error in description db select ${err}`)})
                     )
                 })
             } catch(err) {
