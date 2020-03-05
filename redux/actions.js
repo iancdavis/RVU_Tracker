@@ -43,11 +43,12 @@ export const updateTotalRVU = update => (
     }
 )
 
-export const removeProcedure = index => (
+export const removeProcedure = (index, currentUserID) => (
     {
         type: REMOVE_PROCEDURE,
         payload: {
             index,
+            currentUserID,
         }
     }
 )

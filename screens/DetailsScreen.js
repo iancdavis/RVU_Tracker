@@ -10,8 +10,19 @@ import { Asset } from 'expo-asset'
 import { ScrollView } from 'react-native-gesture-handler'
 //import {datapath} from '../assets/db/rvudb.db'
 
-const db = SQLite.openDatabase('rvudb.db')
+//load in db. Using .mp4 file extension to bypass a known issue
+FileSystem.downloadAsync(
+    Asset.fromModule(require('../assets/db/rvudb.mp4')).uri,
+    `${FileSystem.documentDirectory}SQLite/rvudb.db`
+)
+.then(uri => {
+    console.log("successfully downoaded db to ", uri.uri)
+})
+.catch(error => {
+    console.error(error)
+})
 
+const db = SQLite.openDatabase('rvudb.db')
 
 class DetailsScreen extends React.Component {
     static navigationOptions = {
@@ -25,22 +36,11 @@ class DetailsScreen extends React.Component {
             description: '',
             debugEnabled: true,
             queryResult: {},
-
         }
     }
 
     componentDidMount() {
-
-        this.makeSQLiteDir()
-
-        //load in db. Using .mp4 file extension to bypass a known issue
-        FileSystem.downloadAsync(
-            Asset.fromModule(require('../assets/db/rvudb.mp4')).uri,
-            `${FileSystem.documentDirectory}SQLite/rvudb.db`
-        )
-        .then(function({uri}){
-            console.log("successfully downoaded db to ", uri)
-        })  
+        this.makeSQLiteDir()  
     }
 
     // hacky initilization of a /sqlite directory on the device. This allows the loading of an already existing db to the same directory MIGHT NOT BE NEEDED
@@ -71,7 +71,7 @@ class DetailsScreen extends React.Component {
                 })
             } catch(err) {
                 if (this.state.debugEnabled) {
-                    console.log('error in handleDataQuery')
+                    console.log(`error in handleDataQuery ${err}`)
                 }
             }
         }
@@ -87,7 +87,7 @@ class DetailsScreen extends React.Component {
                 })
             } catch(err) {
                 if (this.state.debugEnabled) {
-                    console.log('error in handleDataQuery')
+                    console.log(`error in handleDataQuery ${err}`)
                 }
             }
         } else {

@@ -4,10 +4,157 @@ import {LineChart, ProgressChart, PieChart} from 'react-native-chart-kit'
 import { Dimensions } from 'react-native'
 import Constants from 'expo-constants'
 
-export default class SettingsScreen extends React.Component {
+import {connect} from 'react-redux'
+
+class SettingsScreen extends React.Component {
+
+  constructor(props){
+    super(props)
+    this.state = {
+
+    }
+  }
+
+  calculateMonthlyRVUarray = () => {
+    let monthlyRVUarray = []
+    let arr = []
+    if (this.props.everything.procedure[this.props.currentUserID].allProcedures === undefined){
+      return monthlyRVUarray
+    } else {
+        for(let i= 0; i < 12; i++){
+          arr[i] = this.props.everything.procedure[this.props.currentUserID].allProcedures.filter(element => (new Date(element.date).getMonth() == i))
+          monthlyRVUarray[i] = arr[i].reduce(rvuSumFunction, 0)
+  
+          function rvuSumFunction(total, value) {
+            return(+total + +value.work_rvu)
+          }
+        }
+        return monthlyRVUarray
+    }
+  }
+
+  calculateSpineRVU = () => {
+    if (this.props.everything.procedure[this.props.currentUserID].allProcedures === undefined){
+      return monthlyRVU
+    } else {
+        let arr = this.props.everything.procedure[this.props.currentUserID].allProcedures.filter(item =>  62263 <= item.hcpcs && item.hcpcs <= 63746 )
+        let spineRVU = arr.reduce(rvuSumFunction, 0)
+
+        function rvuSumFunction(total, value) {
+          return(+total + +value.work_rvu)
+        }
+        return spineRVU
+    }
+
+  }
+
+  calculateCranialRVU = () => {
+    if (this.props.everything.procedure[this.props.currentUserID].allProcedures === undefined){
+      return cranialRVU
+    } else {
+        let arr = this.props.everything.procedure[this.props.currentUserID].allProcedures.filter(item =>  61000 <= item.hcpcs && item.hcpcs <= 62258 )
+        let cranialRVU = arr.reduce(rvuSumFunction, 0)
+
+        function rvuSumFunction(total, value) {
+          return(+total + +value.work_rvu)
+        }
+        return cranialRVU
+    }
+
+  }
+
+  calculateDiagnosticRVU = () => {
+    if (this.props.everything.procedure[this.props.currentUserID].allProcedures === undefined){
+      return diagnosticRVU
+    } else {
+        let arr = this.props.everything.procedure[this.props.currentUserID].allProcedures.filter(item =>  99201 <= item.hcpcs && item.hcpcs <= 99499 )
+        let diagnosticRVU = arr.reduce(rvuSumFunction, 0)
+
+        function rvuSumFunction(total, value) {
+          return(+total + +value.work_rvu)
+        }
+        return diagnosticRVU
+    }
+
+  }
+  
+
+  calculateTotalRVU = () => {
+    let totalRVU = 0
+    if (this.props.everything.procedure[this.props.currentUserID].allProcedures === undefined){
+      return totalRVU
+    } else {
+        let arr = this.props.everything.procedure[this.props.currentUserID].allProcedures
+        let totalRVU = arr.reduce(rvuSumFunction, 0)
+
+        function rvuSumFunction(total, value) {
+          return(+total + +value.work_rvu)
+        }
+        return totalRVU
+    }
+  }
+
+  calculateMonthlyRVU = () => {
+    let monthlyRVU = 0
+    if (this.props.everything.procedure[this.props.currentUserID].allProcedures === undefined){
+      return monthlyRVU
+    } else {
+        let arr = this.props.everything.procedure[this.props.currentUserID].allProcedures.filter(item =>  (new Date() - new Date(item.date)) < 2592000000)
+        let monthlyRVU = arr.reduce(rvuSumFunction, 0)
+
+        function rvuSumFunction(total, value) {
+          return(+total + +value.work_rvu)
+        }
+        return monthlyRVU
+    }
+
+  }
+
+  calculateWeeklyRVU = () => {
+    let weeklyRVU = 0
+    if (this.props.everything.procedure[this.props.currentUserID].allProcedures === undefined){
+      return weeklyRVU
+    } else {
+        let arr = this.props.everything.procedure[this.props.currentUserID].allProcedures.filter(item =>  (new Date() - new Date(item.date)) < 604800000)
+        let weeklyRVU = arr.reduce(rvuSumFunction, 0)
+
+        function rvuSumFunction(total, value) {
+          return(+total + +value.work_rvu)
+        }
+        return weeklyRVU
+    }
+
+  }
+
     render() {
 
+      //Line Chart Calculations
+      const monthlyRVUarray = this.calculateMonthlyRVUarray()
+      console.log(`monthly rvu array ${monthlyRVUarray}`)
+      
+      //Progress Chart Calculations
+      const total = this.calculateTotalRVU()
+      const weekly = this.calculateWeeklyRVU()
+      const monthly = this.calculateWeeklyRVU()
+
+      const annualGoalRVU = 10000
+      const monthlyGoalRVU = annualGoalRVU/12
+      const weeklyGoalRVU = annualGoalRVU/52
+
+      const yearlyRVUProgress = total/annualGoalRVU
+      const weeklyRVUProgress = weekly/weeklyGoalRVU
+      const monthlyRVUProgress = monthly/monthlyGoalRVU
+
+      //Pie Chart Calculations
+      const spineRVU = this.calculateSpineRVU()
+      const cranialRVU = this.calculateCranialRVU()
+      const diagnosticRVU = this.calculateDiagnosticRVU()
+
+
+    
+
       const screenWidth = Dimensions.get("window").width
+      const screenHeight = Dimensions.get('window').height
 
       const chartConfig = {
         backgroundGradientFrom: "#1E2923",
@@ -22,7 +169,7 @@ export default class SettingsScreen extends React.Component {
       // each value represents a goal ring in Progress chart
       const progressChartData = {
         labels: ["Weekly", "Monthly", "Yearly"], // optional
-        data: [0.1, 0.6, 0.8]
+        data: [weeklyRVUProgress, monthlyRVUProgress, yearlyRVUProgress]
       }
 
       const progressChartConfig = {
@@ -32,7 +179,10 @@ export default class SettingsScreen extends React.Component {
         backgroundGradientToOpacity: 0.5,
         color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
         strokeWidth: 2, // optional, default 3
-        barPercentage: 0.5
+        barPercentage: 0.5,
+        style: {
+          borderRadius: 16,
+        },
       };
 
       //Pie Chart info
@@ -40,21 +190,21 @@ export default class SettingsScreen extends React.Component {
       const pieChartData = [
         {
           name: "Spine",
-          categoryRVU: 1500,
+          categoryRVU: spineRVU,
           color: "navy",
           legendFontColor: "#7F7F7F",
           legendFontSize: 15
         },
         {
           name: "Diagnostic",
-          categoryRVU: 300,
+          categoryRVU: diagnosticRVU,
           color: "purple",
           legendFontColor: "#7F7F7F",
           legendFontSize: 15
         },
         {
           name: "Intracranial",
-          categoryRVU: 900,
+          categoryRVU: cranialRVU,
           color: "green",
           legendFontColor: "#7F7F7F",
           legendFontSize: 15
@@ -68,24 +218,17 @@ export default class SettingsScreen extends React.Component {
           <Text>RVU By Month</Text>
           <LineChart
             data={{
-              labels: ["January", "February", "March", "April", "May", "June"],
+              labels: ["Jan", "Feb", "March", "April", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"],
               datasets: [
                 {
-                  data: [
-                    Math.random() * 100,
-                    Math.random() * 100,
-                    Math.random() * 100,
-                    Math.random() * 100,
-                    Math.random() * 100,
-                    Math.random() * 100
-                  ]
+                  data: monthlyRVUarray
                 }
               ]
             }}
             width={Dimensions.get("window").width} // from react-native
-            height={220}
-            yAxisLabel="$"
-            yAxisSuffix="k"
+            height={screenHeight/4}
+            //yAxisLabel="$"
+            //yAxisSuffix="k"
             yAxisInterval={1} // optional, defaults to 1
             chartConfig={{
               backgroundColor: "#e26a00",
@@ -115,21 +258,27 @@ export default class SettingsScreen extends React.Component {
           <ProgressChart
             data={progressChartData}
             width={Dimensions.get("window").width}
-            height={220}
+            height={(Dimensions.get('window').height)/4}//220
             chartConfig={progressChartConfig}
             hideLegend={false}
+            style={{
+              borderRadius: 16
+            }}
           />
 
           <Text>RVUs By Category</Text>
           <PieChart
             data={pieChartData}
             width={screenWidth}
-            height={220}
+            height={screenHeight/4}
             chartConfig={chartConfig}
             accessor="categoryRVU"
-            backgroundColor="transparent"
+            backgroundColor="lightblue"
             paddingLeft="15"
             absolute
+            style={{
+              borderRadius: 16
+            }}
           />
 </View>
       )
@@ -141,7 +290,15 @@ export default class SettingsScreen extends React.Component {
       flex: 1,
       backgroundColor: '#fff',
       alignItems: 'center',
-      justifyContent: 'center',
+      justifyContent: 'flex-start',
       paddingTop: Constants.statusBarHeight,
     },
   });
+
+const mapStateToProps = state => ({
+  everything: state,
+  currentUserID: state.currentUser.currentUserID
+
+})
+
+export default connect(mapStateToProps, null)(SettingsScreen)

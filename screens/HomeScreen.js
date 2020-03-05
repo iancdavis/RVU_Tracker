@@ -14,24 +14,27 @@ class HomeScreen extends React.Component {
   }
   
   calculateTotalRVU = () => {
-    console.log('calculateTotalRVU called')
     let totalRVU = 0
-    if (this.props.everything.procedure.allProcedures === undefined){
-      return totalRVU
-    } else {
-        console.log('calculate rvu else called')
-        let arr = this.props.everything.procedure.allProcedures.filter(item => item.user == this.props.currentUserID)
-        let totalRVU = arr.reduce(rvuSumFunction, 0)
-
-        function rvuSumFunction(total, value) {
-          return(+total + +value.work_rvu)
-        }
+    try {
+      if (this.props.everything.procedure[this.props.currentUserID].allProcedures === undefined){
         return totalRVU
+      } else {
+          let arr = this.props.everything.procedure[this.props.currentUserID].allProcedures
+          let totalRVU = arr.reduce(rvuSumFunction, 0)
+  
+          function rvuSumFunction(total, value) {
+            return(+total + +value.work_rvu)
+          }
+          return totalRVU
+      }
+    } catch (error) {
+        console.log(`calculate total rvu in homescreen error ${error}`)
     }
+    
   }
 
   handleHistoryTouch = (value) => {
-    console.log(`touched history in handle method index is ${this.props.everything.procedure.allProcedures.indexOf(value)}`)
+    console.log(`touched history in handle method index is ${this.props.everything.procedure[this.props.currentUserID].allProcedures.indexOf(value)}`)
     Alert.alert(
       'Do you want to remove this from your procedure history?',
       `${value.description} for ${value.work_rvu} RVUs`,
@@ -39,7 +42,7 @@ class HomeScreen extends React.Component {
           {text: 'Cancel', onPress: () => console.log('Cancel pressed')},
           {text: 'Remove', onPress: () => {
               console.log('Remove pressed')
-              this.props.removeProcedure(this.props.everything.procedure.allProcedures.indexOf(value))
+              this.props.removeProcedure(this.props.everything.procedure[this.props.currentUserID].allProcedures.indexOf(value), this.props.currentUserID)
 
           }},
       ],
@@ -47,9 +50,15 @@ class HomeScreen extends React.Component {
   }
 
   checkShowResults = () => {
-    if(this.props.everything.procedure.allProcedures[0] === undefined){
+    try {
+      if(this.props.everything.procedure[this.props.currentUserID].allProcedures[0] === undefined){
         return false
     } else {return true}
+    } catch (error) {
+      console.log(`checkShowResults error: ${error}`)
+      return false
+    }
+    
   }
 
     render() {
@@ -59,14 +68,13 @@ class HomeScreen extends React.Component {
       return (
         <View style={styles.container}>
           <View style={styles.historySection}>
-            <Text style={{fontSize: 30}}>Your Procedure History</Text>
+            <Text style={{fontSize: 30}}>Procedure History</Text>
             <ScrollView>
-              {this.checkShowResults() && this.props.everything.procedure.allProcedures.map((value, index) => {
-                console.log(`Test in render history list value.user: ${value.user} userid: ${this.props.currentUserID}`)
+              {this.checkShowResults() && this.props.everything.procedure[this.props.currentUserID].allProcedures.map((value, index) => {
                 if(value.user == this.props.currentUserID){
                   return(
                     <TouchableOpacity style={styles.item} key={index} onPress={() => this.handleHistoryTouch(value)}>
-                      <Text key={index}>{value.hcpcs} {value.description} {value.work_rvu} {(new Date(value.date)).toDateString()}</Text>
+                      <Text style={styles.text} key={index}>{value.hcpcs} {value.description} {value.work_rvu} {'\n'} {(new Date(value.date)).toDateString()}</Text>
                     </TouchableOpacity>
                   )
                 }
@@ -75,7 +83,7 @@ class HomeScreen extends React.Component {
             
     <Text style={{fontSize: 20}}>Total RVUs: {totalRVU} </Text>
           </View>
-          <View style={styles.historySection}>
+          <View style={styles.buttonSection}>
             <Button
               title="Add New Procedure"
               onPress={() => this.props.navigation.navigate('Details')}
@@ -94,6 +102,13 @@ class HomeScreen extends React.Component {
       justifyContent: 'center',
     },
     historySection: {
+      flex: 2,
+      backgroundColor: '#fff',
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginTop: 10,
+    },
+    buttonSection: {
       flex: 1,
       backgroundColor: '#fff',
       alignItems: 'center',
@@ -104,12 +119,15 @@ class HomeScreen extends React.Component {
       borderWidth: 1,
       borderColor: 'black',
       minWidth: 100,
-      marginTop: 20,
+      marginVertical: 5,
       marginHorizontal: 20,
       paddingHorizontal: 10,
       paddingVertical: 5,
       borderRadius: 3,
     },
+    text: {
+      textAlign: 'center',
+    }
   });
 
   const mapStateToProps = state => ({
