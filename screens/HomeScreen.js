@@ -61,6 +61,23 @@ class HomeScreen extends React.Component {
     
   }
 
+  handleCSVExport = () => {
+    console.log(`csv export pressed`)
+    try {
+      let collumnHeaders = Object.keys(this.props.everything.procedure[this.props.currentUserID].allProcedures[0]).join(',')
+      let csvContent = 'data:text/csv;charset=utf-8,' + '\r\n' + collumnHeaders + '\r\n'
+
+      this.props.everything.procedure[this.props.currentUserID].allProcedures.forEach(element => {
+        let row = Object.values(element).join(',')
+        csvContent += row + '\r\n'
+        
+      })
+      console.log(csvContent)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
     render() {
 
       const totalRVU = this.calculateTotalRVU()
@@ -88,6 +105,13 @@ class HomeScreen extends React.Component {
               title="Add New Procedure"
               onPress={() => this.props.navigation.navigate('Details')}
             />
+            <View style={styles.buttonSection}>
+              <Button
+                title="Export Data"
+                onPress={() => this.handleCSVExport()}
+              />
+            </View>
+            
           </View>
         </View>
       );

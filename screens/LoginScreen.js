@@ -2,6 +2,7 @@ import React from 'react'
 import { StyleSheet, Text, TextInput, View, Button } from 'react-native'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 
+import Constants from 'expo-constants'
 import * as SQLite from 'expo-sqlite'
 import * as Crypto from 'expo-crypto'
 
@@ -105,25 +106,25 @@ class LoginScreen extends React.Component {
     render() {
       return (
         <View style={styles.container}>
-          <View style={styles.content}>
-            <Text style={styles.text}>Test text</Text>
+          <View style={styles.body}>
+            <Text style={styles.error}>{this.state.err}</Text>
+            <TextInput
+              placeholder="username"
+              value={this.state.username}
+              onChangeText={this.handleUsernameUpdate}
+              autoCapitalize="none"
+            />
+            <TextInput
+              placeholder="password"
+              value={this.state.password}
+              onChangeText={this.handlePasswordUpdate}
+              secureTextEntry
+            />
+            <Button title="Press to Log In" onPress={this._login} />
+            {/* <Button title="Drop user table" onPress={this.clearUserData}/>
+            <Button title="flush persist for testing" onPress={this.handlePersistPurge} /> */}
           </View>
-          <Text style={styles.error}>{this.state.err}</Text>
-          <TextInput
-            placeholder="username"
-            value={this.state.username}
-            onChangeText={this.handleUsernameUpdate}
-            autoCapitalize="none"
-          />
-          <TextInput
-            placeholder="password"
-            value={this.state.password}
-            onChangeText={this.handlePasswordUpdate}
-            secureTextEntry
-          />
-          <Button title="Press to Log In" onPress={this._login} />
-          {/* <Button title="Drop user table" onPress={this.clearUserData}/>
-          <Button title="flush persist for testing" onPress={this.handlePersistPurge} /> */}
+          
           <View style={styles.fixedFooter}>
             <TouchableOpacity
             onPress={this.handleRegistration}
@@ -140,9 +141,11 @@ class LoginScreen extends React.Component {
     container: {
       justifyContent: 'center',
       flex: 1,
+      paddingTop: Constants.statusBarHeight,
     },
-    content: {
+    body: {
       flex: 1,
+      justifyContent: 'flex-end'
     },
     text: {
       textAlign: 'center',
